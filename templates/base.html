@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Task Management{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <link href="{% static 'css/calendar.css' %}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="dark-theme bg-gray-900 text-gray-100 min-h-screen">
+    <!-- Navbar -->
+    <nav class="dark-card border-b border-gray-800 animate-fade-in">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="{% url 'task_list' %}" class="text-xl font-bold text-blue-400 hover-scale">
+                            TaskManager
+                        </a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="{% url 'task_list' %}" class="hover-slide inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-blue-400">
+                            Tasks
+                        </a>
+                        <a href="{% url 'calendar_view' %}" class="hover-slide inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-blue-400">
+                            Calendar
+                        </a>
+                        <a href="{% url 'analytics_dashboard' %}" class="hover-slide inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-blue-400">
+                            <i class="fas fa-chart-line mr-1"></i>
+                            Analytics
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    {% if user.is_authenticated %}
+                        <div class="relative">
+                            <button class="dark-button rounded-full p-2 hover-glow">
+                                <i class="fas fa-user"></i>
+                            </button>
+                            <!-- Dropdown menu -->
+                            <div class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-gray-800 ring-1 ring-black ring-opacity-5">
+                                <a href="{% url 'account_logout' %}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-blue-400">
+                                    Sign Out
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="dark-button rounded-md px-4 py-2 text-sm font-medium hover-glow">
+                            Sign In
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="animate-fade-in">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="notification fixed top-4 right-4 max-w-sm bg-gray-800 text-gray-100 rounded-lg shadow-lg p-4 z-50">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            {% if message.tags == 'success' %}
+                                <i class="fas fa-check-circle text-green-400"></i>
+                            {% elif message.tags == 'error' %}
+                                <i class="fas fa-exclamation-circle text-red-400"></i>
+                            {% else %}
+                                <i class="fas fa-info-circle text-blue-400"></i>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">{{ message }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block modal %}{% endblock %}
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block extra_js %}{% endblock %}
+    <script>
+        // Dropdown toggle
+        document.querySelectorAll('.relative').forEach(dropdown => {
+            const button = dropdown.querySelector('button');
+            const menu = dropdown.querySelector('.hidden');
+            
+            button.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        });
+
+        // Auto-hide notifications
+        document.querySelectorAll('.notification').forEach(notification => {
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s ease-out forwards';
+                setTimeout(() => notification.remove(), 500);
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

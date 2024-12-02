@@ -1,0 +1,54 @@
+:root {
+    --dark-card-bg: #1a1a1a;
+    --dark-border: #2d2d2d;
+    --dark-highlight: #2d2d2d;
+    --dark-text: #e5e5e5;
+    --dark-button-bg: #2d2d2d;
+    --dark-button-hover: #3d3d3d;
+    --dark-button-active: #4d4d4d;
+}
+
+/* Animations */
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Loading Animation */
+.loading-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

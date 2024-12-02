@@ -1,0 +1,68 @@
+<div class="dark-card hover-scale animate-fade-in p-4 rounded-lg">
+    <div class="flex items-start justify-between">
+        <div class="min-w-0 flex-1">
+            <div class="flex items-center mb-2">
+                <h4 class="text-base font-medium text-gray-100 truncate task-title">
+                    <a href="{% url 'task_detail' task.id %}" class="hover-slide hover:text-blue-400 transition-colors duration-300">
+                        {{ task.title }}
+                    </a>
+                </h4>
+            </div>
+            <p class="text-sm text-gray-400 task-description">{{ task.description|truncatewords:30 }}</p>
+            <div class="mt-2 flex flex-wrap gap-2">
+                <span class="priority-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium animate-scale-in
+                    {% if task.priority == 'HIGH' %}
+                        bg-red-900 text-red-200
+                    {% elif task.priority == 'MEDIUM' %}
+                        bg-yellow-900 text-yellow-200
+                    {% else %}
+                        bg-green-900 text-green-200
+                    {% endif %}">
+                    <i class="fas fa-flag mr-1"></i>
+                    {{ task.get_priority_display }}
+                </span>
+                <span class="status-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium animate-scale-in
+                    {% if task.status == 'COMPLETED' %}
+                        bg-green-900 text-green-200
+                    {% elif task.status == 'IN_PROGRESS' %}
+                        bg-blue-900 text-blue-200
+                    {% else %}
+                        bg-gray-800 text-gray-200
+                    {% endif %}">
+                    <i class="status-icon fas {% if task.status == 'COMPLETED' %}fa-check{% elif task.status == 'IN_PROGRESS' %}fa-spinner loading-spinner{% else %}fa-clock{% endif %} mr-1"></i>
+                    {{ task.get_status_display }}
+                </span>
+            </div>
+        </div>
+        <div class="ml-4 flex-shrink-0">
+            <button class="task-status-toggle text-gray-400 hover:text-blue-400 transition-colors duration-300" 
+                    data-task-id="{{ task.id }}" 
+                    data-status="{{ task.status }}"
+                    title="Change Status">
+                <i class="fas fa-exchange-alt hover-scale"></i>
+            </button>
+        </div>
+    </div>
+    <div class="mt-4 flex items-center justify-between text-sm">
+        <div class="flex items-center text-gray-400">
+            <i class="far fa-calendar mr-1"></i>
+            <time datetime="{{ task.due_date|date:'Y-m-d' }}" class="hover-slide">
+                {{ task.due_date|date:"M d, Y" }}
+            </time>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button class="quick-edit-task text-gray-400 hover:text-blue-400 transition-colors duration-300" 
+                    data-task-id="{{ task.id }}" 
+                    title="Quick Edit">
+                <i class="fas fa-edit hover-scale"></i>
+            </button>
+            <form method="post" action="{% url 'task_delete' task.id %}" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="delete-task text-gray-400 hover:text-red-400 transition-colors duration-300" 
+                        title="Delete Task">
+                    <i class="fas fa-trash hover-scale"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

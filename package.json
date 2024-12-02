@@ -1,0 +1,14 @@
+{
+  "name": "task-management",
+  "version": "1.0.0",
+  "description": "Advanced Task Management System",
+  "scripts": {
+    "build": "tailwindcss build -i ./theme/static/css/src/tailwind.css -o ./theme/static/css/dist/tailwind.css --watch"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.3.1"
+  }
+}

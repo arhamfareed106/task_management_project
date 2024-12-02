@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Analytics Dashboard - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css" rel="stylesheet">
+<style>
+    .stat-card {
+        @apply bg-gray-800 rounded-lg p-6 shadow-lg transition-transform duration-300;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    .stat-value {
+        @apply text-4xl font-bold text-blue-400;
+    }
+    .stat-label {
+        @apply text-gray-400 text-sm mt-2;
+    }
+    .chart-container {
+        @apply bg-gray-800 rounded-lg p-6 shadow-lg;
+        height: 300px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-100 mb-8">Task Analytics Dashboard</h1>
+
+    <!-- Key Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Productivity Score -->
+        <div class="stat-card">
+            <div class="stat-value">{{ productivity_score }}%</div>
+            <div class="stat-label">Productivity Score</div>
+            <div class="text-sm text-gray-500 mt-2">Based on completion rate and timeliness</div>
+        </div>
+
+        <!-- Completion Rate -->
+        <div class="stat-card">
+            <div class="stat-value">{{ completion_rate }}%</div>
+            <div class="stat-label">Task Completion Rate</div>
+            <div class="text-sm text-gray-500 mt-2">{{ completed_tasks }} of {{ total_tasks }} tasks completed</div>
+        </div>
+
+        <!-- Average Completion Time -->
+        <div class="stat-card">
+            <div class="stat-value">
+                {% if avg_completion_time.days > 0 %}
+                    {{ avg_completion_time.days }}d
+                {% endif %}
+                {{ avg_completion_time.hours }}h
+            </div>
+            <div class="stat-label">Avg. Completion Time</div>
+            <div class="text-sm text-gray-500 mt-2">Per task</div>
+        </div>
+
+        <!-- Overdue Tasks -->
+        <div class="stat-card {% if overdue_tasks > 0 %}bg-red-900{% endif %}">
+            <div class="stat-value">{{ overdue_tasks }}</div>
+            <div class="stat-label">Overdue Tasks</div>
+            <div class="text-sm text-gray-500 mt-2">Require immediate attention</div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Task Status Distribution -->
+        <div class="chart-container">
+            <h3 class="text-lg font-semibold text-gray-100 mb-4">Task Status Distribution</h3>
+            <canvas id="statusChart"></canvas>
+        </div>
+
+        <!-- Priority Distribution -->
+        <div class="chart-container">
+            <h3 class="text-lg font-semibold text-gray-100 mb-4">Task Priority Distribution</h3>
+            <canvas id="priorityChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Weekly Completion Trend -->
+    <div class="chart-container">
+        <h3 class="text-lg font-semibold text-gray-100 mb-4">Weekly Task Completion Trend</h3>
+        <canvas id="trendChart"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script>
+    // Chart.js Configuration
+    Chart.defaults.color = '#9ca3af';
+    Chart.defaults.borderColor = '#374151';
+
+    // Status Distribution Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ status_distribution|safe|default:"[]" }}.map(item => item.status),
+            datasets: [{
+                data: {{ status_distribution|safe|default:"[]" }}.map(item => item.count),
+                backgroundColor: [
+                    '#10B981', // Completed
+                    '#3B82F6', // In Progress
+                    '#6B7280'  // Todo
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Priority Distribution Chart
+    const priorityCtx = document.getElementById('priorityChart').getContext('2d');
+    new Chart(priorityCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ priority_distribution|safe|default:"[]" }}.map(item => item.priority),
+            datasets: [{
+                label: 'Tasks',
+                data: {{ priority_distribution|safe|default:"[]" }}.map(item => item.count),
+                backgroundColor: [
+                    '#EF4444', // High
+                    '#F59E0B', // Medium
+                    '#10B981'  // Low
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+
+    // Weekly Trend Chart
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: {{ daily_completion|safe|default:"[]" }}.map(item => item.date),
+            datasets: [{
+                label: 'Completed Tasks',
+                data: {{ daily_completion|safe|default:"[]" }}.map(item => item.completed),
+                borderColor: '#3B82F6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

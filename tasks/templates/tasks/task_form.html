@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Task Management{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+        <h1 class="text-2xl font-bold text-gray-900">{{ title }}</h1>
+    </div>
+    <div class="border-t border-gray-200">
+        <form method="post" class="p-6 space-y-6">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    {{ field.label }}
+                </label>
+                <div class="mt-1">
+                    {{ field }}
+                </div>
+                {% if field.errors %}
+                <p class="mt-2 text-sm text-red-600">
+                    {{ field.errors.0 }}
+                </p>
+                {% endif %}
+                {% if field.help_text %}
+                <p class="mt-2 text-sm text-gray-500">
+                    {{ field.help_text }}
+                </p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <div class="flex justify-end space-x-3">
+                <a href="{% url 'task_list' %}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300">
+                    Cancel
+                </a>
+                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                    Save Task
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

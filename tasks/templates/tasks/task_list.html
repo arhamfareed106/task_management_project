@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Tasks - Task Management{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900">Tasks</h1>
+        <a href="{% url 'task_create' %}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+            Create Task
+        </a>
+    </div>
+
+    <!-- Task Filters -->
+    <div class="px-4 py-3 bg-gray-50">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <select class="form-select rounded-md" id="status-filter">
+                <option value="">All Status</option>
+                <option value="TODO">To Do</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETED">Completed</option>
+            </select>
+            <select class="form-select rounded-md" id="priority-filter">
+                <option value="">All Priorities</option>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+            </select>
+            <input type="date" class="form-input rounded-md" id="date-filter" placeholder="Due Date">
+            <input type="text" class="form-input rounded-md" id="search" placeholder="Search tasks...">
+        </div>
+    </div>
+
+    <!-- Task List -->
+    <div class="bg-white">
+        <ul class="divide-y divide-gray-200">
+            {% for task in tasks %}
+            <li class="px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-medium text-gray-900">{{ task.title }}</h3>
+                        <p class="mt-1 text-sm text-gray-500">{{ task.description|truncatewords:30 }}</p>
+                        <div class="mt-2 flex items-center text-sm text-gray-500">
+                            <span class="mr-4">Due: {{ task.due_date|date:"M d, Y" }}</span>
+                            <span class="mr-4">Priority: {{ task.get_priority_display }}</span>
+                            <span>Status: {{ task.get_status_display }}</span>
+                        </div>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex space-x-2">
+                        <a href="{% url 'task_edit' task.id %}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                        <form method="post" action="{% url 'task_delete' task.id %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+            {% empty %}
+            <li class="px-4 py-4 text-center text-gray-500">
+                No tasks found. Create one to get started!
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

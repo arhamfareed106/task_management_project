@@ -1,0 +1,42 @@
+/* Custom styles */
+.messages {
+    margin-bottom: 1rem;
+}
+
+.messages .alert {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+/* Task priority colors */
+.priority-high {
+    background-color: #FEE2E2;
+    color: #991B1B;
+}
+
+.priority-medium {
+    background-color: #FEF3C7;
+    color: #92400E;
+}
+
+.priority-low {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+
+/* Task status colors */
+.status-completed {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+
+.status-in-progress {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+}
+
+.status-todo {
+    background-color: #F3F4F6;
+    color: #374151;
+}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Calendar - Task Management{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900">Calendar</h1>
+        <div class="flex space-x-4">
+            <a href="{% url 'task_create' %}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                Create Task
+            </a>
+            {% if not request.user.googlecalendarcredentials %}
+            <a href="{% url 'google_calendar_init' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                Connect Google Calendar
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="border-t border-gray-200">
+        <div id="calendar" class="p-4"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' rel='stylesheet' />
+<script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: {{ events_json|safe }},
+        eventClick: function(info) {
+            window.location.href = `/tasks/${info.event.id}/edit/`;
+        }
+    });
+    calendar.render();
+});
+</script>
+{% endblock %}
