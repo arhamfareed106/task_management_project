@@ -63,7 +63,7 @@ A comprehensive web application for managing tasks, tracking productivity, and c
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/arhamfareed106/task_management_project
 cd task_management
 ```
 
